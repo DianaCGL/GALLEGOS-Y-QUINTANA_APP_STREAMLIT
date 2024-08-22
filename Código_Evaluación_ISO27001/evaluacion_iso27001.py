@@ -151,9 +151,20 @@ def generar_heatmap(calificaciones):
     # Convert to a 2D matrix
     data_matrix = np.array(niveles)
     
-    fig, ax = plt.subplots(figsize=(12, 8), dpi=200)
-    sns.heatmap(data_matrix, annot=True, fmt="d", cmap="YlGnBu", xticklabels=aspectos, yticklabels=preguntas, ax=ax)
-    ax.set_title("Heatmap de Niveles de Cumplimiento por Pregunta y Aspecto")
+    # Adjust figure size and dpi for better fitting
+    fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
+    
+    # Create heatmap with adjusted font sizes
+    sns.heatmap(data_matrix, annot=True, fmt="d", cmap="YlGnBu", 
+                xticklabels=aspectos, yticklabels=preguntas, ax=ax,
+                cbar_kws={"shrink": 0.5})  # Shrink color bar
+    
+    ax.set_title("Heatmap de Niveles de Cumplimiento por Pregunta y Aspecto", fontsize=12)
+    ax.tick_params(axis='x', labelsize=8)
+    ax.tick_params(axis='y', labelsize=8)
+    
+    plt.xticks(rotation=45, ha="right")  # Rotate x labels for better readability
+    plt.yticks(rotation=0)  # Keep y labels horizontal
     
     plt.tight_layout()  # Adjust layout to ensure everything fits
     
@@ -228,6 +239,7 @@ def generar_informe_word(calificaciones, promedios_ponderados, calificacion_fina
     document.add_paragraph("7. Conclusión General")
     document.add_paragraph("8. Gráfico de Nivel de Cumplimiento por Aspecto")
     document.add_paragraph("9. Gráfico de Radar por Aspecto")
+    document.add_paragraph("10. Heatmap de Niveles de Cumplimiento")
 
     # Añadir un salto de página
     document.add_page_break()
