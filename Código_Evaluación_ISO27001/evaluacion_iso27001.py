@@ -6,6 +6,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import io
+import seaborn as sns
 
 # Definir las descripciones de las rúbricas específicas para cada pregunta
 rubricas = {
@@ -136,6 +137,26 @@ def generar_grafico_radar(promedios_ponderados):
 
     plt.tight_layout()  # Adjust layout to ensure everything fits
 
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    return buf
+
+# Generar heatmap utilizando seaborn
+def generar_heatmap(calificaciones):
+    aspectos = list(calificaciones.keys())
+    preguntas = [list(pregunta[0] for pregunta in calificaciones[aspecto]) for aspecto in aspectos]
+    niveles = [list(pregunta[1] for pregunta in calificaciones[aspecto]) for aspecto in aspectos]
+    
+    # Convert to a 2D matrix
+    data_matrix = np.array(niveles)
+    
+    fig, ax = plt.subplots(figsize=(12, 8), dpi=200)
+    sns.heatmap(data_matrix, annot=True, fmt="d", cmap="YlGnBu", xticklabels=aspectos, yticklabels=preguntas, ax=ax)
+    ax.set_title("Heatmap de Niveles de Cumplimiento por Pregunta y Aspecto")
+    
+    plt.tight_layout()  # Adjust layout to ensure everything fits
+    
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
@@ -307,7 +328,12 @@ def generar_informe_word(calificaciones, promedios_ponderados, calificacion_fina
     document.add_heading('Gráfico de Radar por Aspecto', level=1)
     buf_radar = generar_grafico_radar(promedios_ponderados)
     document.add_picture(buf_radar, width=Inches(6))
-
+    
+    # Add Heatmap
+document.add_heading('Heatmap de Niveles de Cumplimiento', level=1)
+buf_heatmap = generar_heatmap(calificaciones)
+document.add_picture(buf_heatmap, width=Inches(6))
+    
     # Añadir pie de página
     section = document.sections[0]
     footer = section.footer
