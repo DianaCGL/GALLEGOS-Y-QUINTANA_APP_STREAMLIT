@@ -328,11 +328,11 @@ def generar_informe_word(calificaciones, promedios_ponderados, calificacion_fina
     document.add_heading('Gráfico de Radar por Aspecto', level=1)
     buf_radar = generar_grafico_radar(promedios_ponderados)
     document.add_picture(buf_radar, width=Inches(6))
-    
-    # Add Heatmap
-document.add_heading('Heatmap de Niveles de Cumplimiento', level=1)
-buf_heatmap = generar_heatmap(calificaciones)
-document.add_picture(buf_heatmap, width=Inches(6))
+
+    #add heatmap
+    document.add_heading('Heatmap de Niveles de Cumplimiento', level=1)
+    buf_heatmap = generar_heatmap(calificaciones)
+    document.add_picture(buf_heatmap, width=Inches(6))
     
     # Añadir pie de página
     section = document.sections[0]
