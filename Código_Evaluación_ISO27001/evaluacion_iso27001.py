@@ -152,26 +152,28 @@ def generar_heatmap(calificaciones):
     data_matrix = np.array(niveles)
     
     # Adjust figure size and dpi for better fitting
-    fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
+    fig, ax = plt.subplots(figsize=(12, 8), dpi=150)
     
     # Create heatmap with adjusted font sizes
     sns.heatmap(data_matrix, annot=True, fmt="d", cmap="YlGnBu", 
                 xticklabels=aspectos, yticklabels=preguntas, ax=ax,
-                cbar_kws={"shrink": 0.5})  # Shrink color bar
+                cbar_kws={"shrink": 0.5}, linewidths=0.5, linecolor='gray')  # Shrink color bar
     
     ax.set_title("Heatmap de Niveles de Cumplimiento por Pregunta y Aspecto", fontsize=12)
+    
+    # Reduce label sizes and adjust rotation for better fitting
     ax.tick_params(axis='x', labelsize=8)
     ax.tick_params(axis='y', labelsize=8)
+    plt.xticks(rotation=45, ha="right", fontsize=8)  # Rotate x labels for better readability
+    plt.yticks(rotation=0, fontsize=8)  # Keep y labels horizontal
     
-    plt.xticks(rotation=45, ha="right")  # Rotate x labels for better readability
-    plt.yticks(rotation=0)  # Keep y labels horizontal
-    
-    plt.tight_layout()  # Adjust layout to ensure everything fits
+    plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.3)  # Adjust plot margins
     
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
     return buf
+
 
 # Generar la conclusión general basada en la calificación final
 def generar_conclusion(calificacion_final):
