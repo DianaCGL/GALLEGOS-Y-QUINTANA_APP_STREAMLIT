@@ -104,11 +104,13 @@ def generar_grafico(promedios_ponderados):
     aspectos = list(promedios_ponderados.keys())
     valores = list(promedios_ponderados.values())
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 6), dpi=200)  # Increased DPI for better resolution
     ax.barh(aspectos, valores, color='skyblue')
     ax.set_xlabel('Nivel de Cumplimiento (sobre 20)')
     ax.set_title('Gráfico de Nivel de Cumplimiento por Aspecto')
     ax.set_xlim(0, 20)
+
+    plt.tight_layout()  # Adjust layout to ensure everything fits
 
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
@@ -124,13 +126,15 @@ def generar_grafico_radar(promedios_ponderados):
     angulos = np.linspace(0, 2 * np.pi, len(etiquetas), endpoint=False).tolist()
     angulos += angulos[:1]
 
-    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+    fig, ax = plt.subplots(figsize=(6, 6), dpi=200, subplot_kw=dict(polar=True))  # Increased DPI
     ax.fill(angulos, valores, color='skyblue', alpha=0.25)
     ax.plot(angulos, valores, color='skyblue', linewidth=2)
     ax.set_yticklabels([])
     ax.set_xticks(angulos[:-1])
-    ax.set_xticklabels(etiquetas)
-    ax.set_title('Gráfico de Radar por Aspecto')
+    ax.set_xticklabels(etiquetas, fontsize=8)  # Reduced font size for labels
+    ax.set_title('Gráfico de Radar por Aspecto', fontsize=10)
+
+    plt.tight_layout()  # Adjust layout to ensure everything fits
 
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
