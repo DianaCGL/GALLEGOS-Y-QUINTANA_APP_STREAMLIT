@@ -144,35 +144,50 @@ def generar_grafico_radar(promedios_ponderados):
 
 # Generar heatmap utilizando seaborn
 def generar_heatmap(calificaciones):
-    aspectos = list(calificaciones.keys())
-    preguntas = [list(pregunta[0] for pregunta in calificaciones[aspecto]) for aspecto in aspectos]
-    niveles = [list(pregunta[1] for pregunta in calificaciones[aspecto]) for aspecto in aspectos]
+    try:
+        # Extract aspects and questions
+        aspectos = list(calificaciones.keys())
+        preguntas = [list(pregunta[0] for pregunta in calificaciones[aspecto]) for aspecto in aspectos]
+        niveles = [list(pregunta[1] for pregunta in calificaciones[aspecto]) for aspecto in aspectos]
+        
+        # Convert to a 2D matrix
+        data_matrix = np.array(niveles)
+        
+        # Ensure the data matrix has the correct shape
+        if data_matrix.size == 0 or len(data_matrix.shape) != 2:
+            raise ValueError("Data matrix is empty or not 2-dimensional. Check your input data.")
+        
+        # Print the data matrix shape for debugging
+        print("Data matrix shape:", data_matrix.shape)
+        print("Data matrix contents:\n", data_matrix)
+        
+        # Adjust figure size and dpi for better fitting
+        fig, ax = plt.subplots(figsize=(10, 8), dpi=150)
+        
+        # Create heatmap with adjusted font sizes and layout
+        sns.heatmap(data_matrix, annot=True, fmt="d", cmap="YlGnBu", 
+                    xticklabels=aspectos, yticklabels=preguntas, ax=ax,
+                    cbar_kws={"shrink": 0.5}, linewidths=0.5, linecolor='gray')  # Shrink color bar
+        
+        ax.set_title("Heatmap de Niveles de Cumplimiento por Pregunta y Aspecto", fontsize=12)
+        
+        # Reduce label sizes and adjust rotation for better fitting
+        ax.tick_params(axis='x', labelsize=8)
+        ax.tick_params(axis='y', labelsize=8)
+        plt.xticks(rotation=45, ha="right", fontsize=8)  # Rotate x labels for better readability
+        plt.yticks(rotation=0, fontsize=8)  # Keep y labels horizontal
+        
+        plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.3)  # Adjust plot margins
+        
+        # Save plot to buffer
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        return buf
     
-    # Convert to a 2D matrix
-    data_matrix = np.array(niveles)
-    
-    # Adjust figure size and dpi for better fitting
-    fig, ax = plt.subplots(figsize=(12, 8), dpi=150)
-    
-    # Create heatmap with adjusted font sizes
-    sns.heatmap(data_matrix, annot=True, fmt="d", cmap="YlGnBu", 
-                xticklabels=aspectos, yticklabels=preguntas, ax=ax,
-                cbar_kws={"shrink": 0.5}, linewidths=0.5, linecolor='gray')  # Shrink color bar
-    
-    ax.set_title("Heatmap de Niveles de Cumplimiento por Pregunta y Aspecto", fontsize=12)
-    
-    # Reduce label sizes and adjust rotation for better fitting
-    ax.tick_params(axis='x', labelsize=8)
-    ax.tick_params(axis='y', labelsize=8)
-    plt.xticks(rotation=45, ha="right", fontsize=8)  # Rotate x labels for better readability
-    plt.yticks(rotation=0, fontsize=8)  # Keep y labels horizontal
-    
-    plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.3)  # Adjust plot margins
-    
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
-    return buf
+    except Exception as e:
+        print("Error generating heatmap:", e)
+        raise
 
 
 # Generar la conclusión general basada en la calificación final
