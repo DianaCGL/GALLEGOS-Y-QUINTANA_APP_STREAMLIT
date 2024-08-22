@@ -6,7 +6,6 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import io
-import seaborn as sns
 
 # Definir las descripciones de las rúbricas específicas para cada pregunta
 rubricas = {
@@ -142,54 +141,6 @@ def generar_grafico_radar(promedios_ponderados):
     buf.seek(0)
     return buf
 
-# Generar heatmap utilizando seaborn
-def generar_heatmap(calificaciones):
-    try:
-        # Extract aspects and questions
-        aspectos = list(calificaciones.keys())
-        preguntas = [list(pregunta[0] for pregunta in calificaciones[aspecto]) for aspecto in aspectos]
-        niveles = [list(pregunta[1] for pregunta in calificaciones[aspecto]) for aspecto in aspectos]
-        
-        # Convert to a 2D matrix
-        data_matrix = np.array(niveles)
-        
-        # Ensure the data matrix has the correct shape
-        if data_matrix.size == 0 or len(data_matrix.shape) != 2:
-            raise ValueError("Data matrix is empty or not 2-dimensional. Check your input data.")
-        
-        # Print the data matrix shape for debugging
-        print("Data matrix shape:", data_matrix.shape)
-        print("Data matrix contents:\n", data_matrix)
-        
-        # Adjust figure size and dpi for better fitting
-        fig, ax = plt.subplots(figsize=(10, 8), dpi=150)
-        
-        # Create heatmap with adjusted font sizes and layout
-        sns.heatmap(data_matrix, annot=True, fmt="d", cmap="YlGnBu", 
-                    xticklabels=aspectos, yticklabels=preguntas, ax=ax,
-                    cbar_kws={"shrink": 0.5}, linewidths=0.5, linecolor='gray')  # Shrink color bar
-        
-        ax.set_title("Heatmap de Niveles de Cumplimiento por Pregunta y Aspecto", fontsize=12)
-        
-        # Reduce label sizes and adjust rotation for better fitting
-        ax.tick_params(axis='x', labelsize=8)
-        ax.tick_params(axis='y', labelsize=8)
-        plt.xticks(rotation=45, ha="right", fontsize=8)  # Rotate x labels for better readability
-        plt.yticks(rotation=0, fontsize=8)  # Keep y labels horizontal
-        
-        plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.3)  # Adjust plot margins
-        
-        # Save plot to buffer
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png')
-        buf.seek(0)
-        return buf
-    
-    except Exception as e:
-        print("Error generating heatmap:", e)
-        raise
-
-
 # Generar la conclusión general basada en la calificación final
 def generar_conclusion(calificacion_final):
     if 0 <= calificacion_final <= 25:
@@ -256,7 +207,6 @@ def generar_informe_word(calificaciones, promedios_ponderados, calificacion_fina
     document.add_paragraph("7. Conclusión General")
     document.add_paragraph("8. Gráfico de Nivel de Cumplimiento por Aspecto")
     document.add_paragraph("9. Gráfico de Radar por Aspecto")
-    document.add_paragraph("10. Heatmap de Niveles de Cumplimiento")
 
     # Añadir un salto de página
     document.add_page_break()
@@ -358,11 +308,6 @@ def generar_informe_word(calificaciones, promedios_ponderados, calificacion_fina
     buf_radar = generar_grafico_radar(promedios_ponderados)
     document.add_picture(buf_radar, width=Inches(6))
 
-    #add heatmap
-    document.add_heading('Heatmap de Niveles de Cumplimiento', level=1)
-    buf_heatmap = generar_heatmap(calificaciones)
-    document.add_picture(buf_heatmap, width=Inches(6))
-    
     # Añadir pie de página
     section = document.sections[0]
     footer = section.footer
