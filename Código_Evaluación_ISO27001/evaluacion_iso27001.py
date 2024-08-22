@@ -141,6 +141,27 @@ def generar_grafico_radar(promedios_ponderados):
     buf.seek(0)
     return buf
 
+# Generar Line Chart
+def generar_line_chart(promedios_ponderados):
+    aspectos = list(promedios_ponderados.keys())
+    valores = list(promedios_ponderados.values())
+    
+    # Create a line chart
+    fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
+    ax.plot(aspectos, valores, marker='o', linestyle='-', color='skyblue', linewidth=2, markersize=6)
+    
+    ax.set_xlabel('Aspectos')
+    ax.set_ylabel('Nivel de Cumplimiento (sobre 20)')
+    ax.set_title('Evolución del Nivel de Cumplimiento por Aspecto')
+    
+    plt.xticks(rotation=45, ha="right", fontsize=10)
+    plt.tight_layout()  # Adjust layout to ensure everything fits
+    
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    return buf
+
 # Generar la conclusión general basada en la calificación final
 def generar_conclusion(calificacion_final):
     if 0 <= calificacion_final <= 25:
@@ -207,6 +228,7 @@ def generar_informe_word(calificaciones, promedios_ponderados, calificacion_fina
     document.add_paragraph("7. Conclusión General")
     document.add_paragraph("8. Gráfico de Nivel de Cumplimiento por Aspecto")
     document.add_paragraph("9. Gráfico de Radar por Aspecto")
+    document.add_paragraph("10. Gráfico de Evolución del Nivel de Cumplimiento por Aspecto")
 
     # Añadir un salto de página
     document.add_page_break()
@@ -308,6 +330,11 @@ def generar_informe_word(calificaciones, promedios_ponderados, calificacion_fina
     buf_radar = generar_grafico_radar(promedios_ponderados)
     document.add_picture(buf_radar, width=Inches(6))
 
+    # Add Line Chart
+    document.add_heading('Gráfico de Evolución del Nivel de Cumplimiento por Aspecto', level=1)
+    buf_line = generar_line_chart(promedios_ponderados)
+    document.add_picture(buf_line, width=Inches(6))
+    
     # Añadir pie de página
     section = document.sections[0]
     footer = section.footer
